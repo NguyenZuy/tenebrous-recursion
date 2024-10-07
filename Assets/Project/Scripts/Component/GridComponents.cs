@@ -12,8 +12,8 @@ namespace Zuy.TenebrousRecursion.Component
         // ulong minMorton = PointToMorton(minCorner);
         // ulong maxMorton = PointToMorton(maxCorner);
 
-        public uint minMorton;
-        public uint maxMorton;
+        public int minMorton;
+        public int maxMorton;
 
         public float lastTimeToExecuteJob;
     }

@@ -13,9 +13,10 @@ namespace Zuy.TenebrousRecursion.Job
     {
         void Execute(ref Enemy enemy, in LocalTransform localTransform)
         {
-            float2 pos;
-            ConvertUtils.F3ToF2(localTransform.Position, out pos);
+            ConvertUtils.F3ToF2(localTransform.Position, out float2 pos);
+            UnityEngine.Debug.Log("After: " + pos);
             enemy.morton = MortonUtils.PosToMorton(pos);
+            UnityEngine.Debug.Log("Morton Code: " + MortonUtils.PosToMorton(pos));
         }
     }
 
@@ -27,7 +28,7 @@ namespace Zuy.TenebrousRecursion.Job
 
         void Execute(ref Enemy enemy)
         {
-            uint morton = enemy.morton;
+            int morton = enemy.morton;
             for (int i = 0; i < cells.Length; i++)
             {
                 if (IsInsideCell(morton, cells[i]))
@@ -38,8 +39,9 @@ namespace Zuy.TenebrousRecursion.Job
             }
         }
 
-        bool IsInsideCell(in uint mortonCheck, in Cell cell)
+        bool IsInsideCell(in int mortonCheck, in Cell cell)
         {
+            UnityEngine.Debug.Log($"Check {mortonCheck} with {cell.minMorton} and {cell.maxMorton}");
             return mortonCheck >= cell.minMorton && mortonCheck <= cell.maxMorton;
         }
     }

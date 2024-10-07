@@ -1,6 +1,8 @@
+using System;
 using Unity.Entities;
 using UnityEngine;
 using Zuy.TenebrousRecursion.Component;
+using Zuy.TenebrousRecursion.Utility;
 
 namespace Zuy.TenebrousRecursion.Authoring
 {

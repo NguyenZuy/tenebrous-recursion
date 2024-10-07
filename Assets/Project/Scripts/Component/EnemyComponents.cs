@@ -4,7 +4,7 @@ namespace Zuy.TenebrousRecursion.Component
 {
     public struct Enemy : IComponentData
     {
-        public uint morton;
+        public int morton;
         public Entity curCell;
     }
 }

@@ -2,6 +2,7 @@ using System.Linq;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using UnityEngine;
 using Zuy.TenebrousRecursion.Component;
 
 namespace Zuy.TenebrousRecursion.Job
