@@ -1,0 +1,11 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resource/UI/common.uss?fileID=7433441132597879392&amp;guid=45ef682066e0a4845b9c49ee2c5780e1&amp;type=3#common" />
+    <Style src="project://database/Assets/Resource/UI/sample_view_2.uss?fileID=7433441132597879392&amp;guid=8ee85fab47957a54c8c98535dba67340&amp;type=3#sample_view_2" />
+    <engine:VisualElement name="container" class="container sample-view-2__container">
+        <engine:VisualElement name="overlay" class="overlay" />
+        <engine:VisualElement name="background" class="sample-view-2__background">
+            <engine:Label text="This is sample view 2" name="title" class="sample-view-2__title" />
+            <engine:Label text="Made by NguyenZuy" name="author" class="sample-view-2__author" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>
