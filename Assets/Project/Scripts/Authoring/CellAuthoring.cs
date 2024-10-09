@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 using Zuy.TenebrousRecursion.Component;
 using Zuy.TenebrousRecursion.Utility;
@@ -7,20 +8,16 @@ namespace Zuy.TenebrousRecursion.Authoring
 {
     class CellAuthoring : MonoBehaviour
     {
-        public Vector2 size;
+        // public ulong mortonCode;
 
-        private void OnDrawGizmos()
-        {
-            // Set the color for the Gizmo
-            Gizmos.color = Color.cyan;
 
-            // Calculate the center and size
-            Vector3 center = transform.position;
-            Vector3 size3D = new Vector3(size.x, size.y, 0);
-
-            // Draw a wire cube (which will appear as a rectangle in 2D)
-            Gizmos.DrawWireCube(center, size3D);
-        }
+        // void Start()
+        // {
+        //     Vector3 localPosition = transform.position;
+        //     int gridX = Mathf.FloorToInt(localPosition.x / transform.parent.GetComponent<GridAuthoring>().cellSize);
+        //     int gridY = Mathf.FloorToInt(localPosition.y / transform.parent.GetComponent<GridAuthoring>().cellSize);
+        //     mortonCode = MortonCode.Encode(gridX, gridY);
+        // }
 
         class Baker : Baker<CellAuthoring>
         {
@@ -28,16 +25,11 @@ namespace Zuy.TenebrousRecursion.Authoring
             {
                 var entity = GetEntity(authoring, TransformUsageFlags.None);
 
-                Vector2 halfSize = authoring.size / 2f;
-                Vector2 center = ConvertUtils.V3ToV2(authoring.transform.position);
-
-                Vector2 minCorner = center - halfSize;
-                Vector2 maxCorner = center + halfSize;
+                ConvertUtils.F3ToF2(authoring.transform.position, out float2 pos);
 
                 AddComponent(entity, new Cell()
                 {
-                    minMorton = MortonUtils.PosToMorton(minCorner),
-                    maxMorton = MortonUtils.PosToMorton(maxCorner)
+                    mortonCode = MortonUtils.Encode(pos, authoring.transform.parent.GetComponent<GridAuthoring>().cellSize)
                 });
 
                 AddBuffer<CellMember>(entity);

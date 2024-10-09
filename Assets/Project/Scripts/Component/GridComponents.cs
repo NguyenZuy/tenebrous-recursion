@@ -3,6 +3,11 @@ using Unity.Mathematics;
 
 namespace Zuy.TenebrousRecursion.Component
 {
+    public struct Grid : IComponentData
+    {
+        public float cellSize;
+    }
+
     public struct Cell : IComponentData
     {
         // float2 minCorner = center - halfSize;
@@ -12,8 +17,10 @@ namespace Zuy.TenebrousRecursion.Component
         // ulong minMorton = PointToMorton(minCorner);
         // ulong maxMorton = PointToMorton(maxCorner);
 
-        public int minMorton;
-        public int maxMorton;
+        // public uint minMorton;
+        // public uint maxMorton;
+
+        public uint mortonCode;
 
         public float lastTimeToExecuteJob;
     }

@@ -1,0 +1,16 @@
+{
+    "name": "Zuy.TenebrousRecursion.Editor",
+    "rootNamespace": "Zuy.TenebrousRecursion.Editor",
+    "references": [
+        "GUID:25b7c01c2f36a198c995c3094c488932"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

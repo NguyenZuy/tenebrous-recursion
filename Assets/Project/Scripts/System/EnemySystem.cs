@@ -8,13 +8,19 @@ namespace Zuy.TenebrousRecursion.System
 {
     [BurstCompile]
     [UpdateBefore(typeof(GridSystem))]
+    [RequireMatchingQueriesForUpdate]
     partial struct EnemySystem : ISystem
     {
+        private EntityQuery _gridQuery;
         private EntityQuery _cellQuery;
 
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
+            _gridQuery = new EntityQueryBuilder(Allocator.Temp)
+                .WithAll<Grid>()
+                .Build(ref state);
+
             _cellQuery = new EntityQueryBuilder(Allocator.Temp)
                 .WithAll<Cell>()
                 .Build(ref state);
@@ -23,10 +29,15 @@ namespace Zuy.TenebrousRecursion.System
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            var grid = _gridQuery.GetSingleton<Grid>();
+
             NativeArray<Cell> cells = _cellQuery.ToComponentDataArray<Cell>(Allocator.TempJob);
             NativeArray<Entity> cellEntities = _cellQuery.ToEntityArray(Allocator.TempJob);
 
-            var encodeMortonJob = new EncodeMortonJob() { };
+            var encodeMortonJob = new EncodeMortonJob()
+            {
+                cellSize = grid.cellSize
+            };
             state.Dependency = encodeMortonJob.ScheduleParallel(state.Dependency);
 
             var getCurCellJob = new GetCurCellJob()

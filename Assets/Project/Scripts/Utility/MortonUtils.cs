@@ -8,49 +8,37 @@ namespace Zuy.TenebrousRecursion.Utility
     public static class MortonUtils
     {
         [BurstCompile]
-        public static int PosToMorton(in float2 pos)
+        public static uint Encode(in float2 value, in float cellSize)
         {
-            float minX = -1000f;
-            float minY = -1000f;
-            float scale = 1f;
+            int2 roundedValue = (int2)math.floor(value / cellSize);
 
-            int x = (int)math.floor((pos.x - minX) * scale);
-            int y = (int)math.floor((pos.y - minY) * scale);
-
-
-            return InterleaveZero(x) | (InterleaveZero(y) << 1);
+            return (uint)((Part1By1(roundedValue.y) << 1) + Part1By1(roundedValue.x));
         }
 
         [BurstCompile]
-        private static int InterleaveZero(int x)
+        private static uint Part1By1(int n)
         {
-            x &= 0x0000ffff;                  // Keep only the lower 16 bits
-            x = (x | (x << 8)) & 0x00FF00FF;  // Interleave zeros
-            x = (x | (x << 4)) & 0x0F0F0F0F;  // Interleave zeros
-            x = (x | (x << 2)) & 0x33333333;  // Interleave zeros
-            x = (x | (x << 1)) & 0x55555555;  // Interleave zeros
-            return x;
+            n &= 0x0000ffff;
+            n = (n ^ (n << 8)) & 0x00ff00ff;
+            n = (n ^ (n << 4)) & 0x0f0f0f0f;
+            n = (n ^ (n << 2)) & 0x33333333;
+            n = (n ^ (n << 1)) & 0x55555555;
+            return (uint)n;
         }
 
-        // // Method to convert Morton code back to float2
-        // [BurstCompile]
-        // public static void MortonToPos(uint mortonCode, out float2 result)
-        // {
-        //     int x = DeinterleaveZero(mortonCode);
-        //     int y = DeinterleaveZero(mortonCode >> 1);
+        public static (int x, int y) Decode(uint code)
+        {
+            return (Compact1By1(code), Compact1By1(code >> 1));
+        }
 
-        //     result = new float2(x, y) / 65535;
-        // }
-
-        // [BurstCompile]
-        // private static int DeinterleaveZero(uint morton)
-        // {
-        //     morton &= 0x55555555;
-        //     morton = (morton | (morton >> 1)) & 0x33333333;
-        //     morton = (morton | (morton >> 2)) & 0x0F0F0F0F;
-        //     morton = (morton | (morton >> 4)) & 0x00FF00FF;
-        //     morton = (morton | (morton >> 8)) & 0x0000FFFF;
-        //     return (int)morton;
-        // }
+        private static int Compact1By1(uint n)
+        {
+            n &= 0x55555555;
+            n = (n ^ (n >> 1)) & 0x33333333;
+            n = (n ^ (n >> 2)) & 0x0f0f0f0f;
+            n = (n ^ (n >> 4)) & 0x00ff00ff;
+            n = (n ^ (n >> 8)) & 0x0000ffff;
+            return (int)n;
+        }
     }
 }

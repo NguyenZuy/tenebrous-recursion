@@ -4,7 +4,8 @@ using UnityEngine;
 using System;
 using Zuy.Workspace.MobileController;
 
-public class ExampleActor : MonoBehaviour {
+public class ExampleActor : MonoBehaviour
+{
     public UniversalButton inputMove;
     public SkillCanceller skillCanceller;
     public UniversalButton[] skillButtons;
@@ -18,12 +19,14 @@ public class ExampleActor : MonoBehaviour {
 
     public MessageBox msg;
 
-    protected virtual void Start() {
+    protected virtual void Start()
+    {
         Application.targetFrameRate = 60;
 
         cooldowns = new float[3];
 
-        for (int i = 0; i < skillButtons.Length; i++) {
+        for (int i = 0; i < skillButtons.Length; i++)
+        {
             skillButtons[i].SetActiveState(true);
             skillButtons[i].SetText("");
             skillSettings[i].skillMarker.transform.position = this.transform.position;
@@ -32,8 +35,10 @@ public class ExampleActor : MonoBehaviour {
         }
     }
 
-    protected virtual void OnEnable() {
-        for (int i = 0; i < skillButtons.Length; i++) {
+    protected virtual void OnEnable()
+    {
+        for (int i = 0; i < skillButtons.Length; i++)
+        {
             skillButtons[i].onPointerDown.AddListener(OnSkillButtonPressed);
             skillButtons[i].onDrag.AddListener(OnSkillButtonDragged);
             skillButtons[i].onActivateSkill.AddListener(OnActivateSkill);
@@ -41,8 +46,10 @@ public class ExampleActor : MonoBehaviour {
         }
     }
 
-    protected virtual void OnDisable() {
-        for (int i = 0; i < skillButtons.Length; i++) {
+    protected virtual void OnDisable()
+    {
+        for (int i = 0; i < skillButtons.Length; i++)
+        {
             skillButtons[i].onPointerDown.RemoveListener(OnSkillButtonPressed);
             skillButtons[i].onDrag.RemoveListener(OnSkillButtonDragged);
             skillButtons[i].onActivateSkill.RemoveListener(OnActivateSkill);
@@ -51,14 +58,21 @@ public class ExampleActor : MonoBehaviour {
     }
 
     protected Vector3 cachedInput;
-    protected virtual void Update() {
-        if (inputMove.isFingerDown) {
+    protected virtual void Update()
+    {
+        if (inputMove.isFingerDown)
+        {
             cachedInput = inputMove.directionXZ;
             transform.forward = cachedInput;
-        } else {
-            if (lerpStopping) {
+        }
+        else
+        {
+            if (lerpStopping)
+            {
                 cachedInput = Vector3.Lerp(cachedInput, Vector3.zero, moveSpeed * Time.deltaTime);
-            } else {
+            }
+            else
+            {
                 cachedInput = Vector3.zero;
             }
         }
@@ -67,8 +81,10 @@ public class ExampleActor : MonoBehaviour {
         dirMarker.position = transform.position + cachedInput;
         msg.UpdatePosition(transform.position);
 
-        if (skillCanceller.isAnyFingerDown) {
-            for (int i = 0; i < skillButtons.Length; i++) {
+        if (skillCanceller.isAnyFingerDown)
+        {
+            for (int i = 0; i < skillButtons.Length; i++)
+            {
                 skillSettings[i].skillMarker.transform.position = GetSkillMarkerPosition(i);
             }
         }
@@ -76,20 +92,30 @@ public class ExampleActor : MonoBehaviour {
         this.UpdateCooldown();
     }
 
-    protected virtual void UpdateCooldown() {
-        for (int i = 0; i < cooldowns.Length; i++) {
-            if (cooldowns[i] > 0f) {
+    protected virtual void UpdateCooldown()
+    {
+        for (int i = 0; i < cooldowns.Length; i++)
+        {
+            if (cooldowns[i] > 0f)
+            {
                 cooldowns[i] -= Time.deltaTime;
-                if (cooldowns[i] < 1f) {
+                if (cooldowns[i] < 1f)
+                {
                     skillButtons[i].SetText(cooldowns[i].ToString("F1"));
-                } else {
+                }
+                else
+                {
                     skillButtons[i].SetText("" + (int)cooldowns[i]);
                 }
-                if (skillButtons[i].state == UniversalButton.ButtonState.Active) {
+                if (skillButtons[i].state == UniversalButton.ButtonState.Active)
+                {
                     skillButtons[i].SetActiveState(false);
                 }
-            } else {
-                if (skillButtons[i].state == UniversalButton.ButtonState.Inactive) {
+            }
+            else
+            {
+                if (skillButtons[i].state == UniversalButton.ButtonState.Inactive)
+                {
                     skillButtons[i].SetText("");
                     skillButtons[i].SetActiveState(true);
                 }
@@ -97,24 +123,31 @@ public class ExampleActor : MonoBehaviour {
         }
     }
 
-    protected virtual void OnSkillButtonPressed(int i) {
+    protected virtual void OnSkillButtonPressed(int i)
+    {
         skillSettings[i].skillMarker.SetActive(true);
         this.UpdateSkillMarkersState(i);
     }
 
-    protected virtual void OnSkillButtonDragged(int i) {
+    protected virtual void OnSkillButtonDragged(int i)
+    {
         this.UpdateSkillMarkersState(i);
     }
 
-    protected virtual void UpdateSkillMarkersState(int i) {
-        if (skillCanceller.state == UniversalButton.ButtonState.Pressed) {
+    protected virtual void UpdateSkillMarkersState(int i)
+    {
+        if (skillCanceller.state == UniversalButton.ButtonState.Pressed)
+        {
             skillSettings[i].SetMarkerCanCastSkill(false);
-        } else {
+        }
+        else
+        {
             skillSettings[i].SetMarkerCanCastSkill(true);
         }
     }
 
-    protected virtual void OnActivateSkill(int i) {
+    protected virtual void OnActivateSkill(int i)
+    {
         skillSettings[i].SpawnSkillAt(skillSettings[i].skillMarker.transform.position);
         skillSettings[i].skillMarker.SetActive(false);
         skillSettings[i].skillMarker.transform.position = this.transform.position;
@@ -124,7 +157,8 @@ public class ExampleActor : MonoBehaviour {
         msg.PopText("Activated skill " + i);
     }
 
-    protected virtual void OnCancelSkill(int i) {
+    protected virtual void OnCancelSkill(int i)
+    {
         skillSettings[i].skillMarker.SetActive(false);
         skillSettings[i].skillMarker.transform.position = this.transform.position;
         this.skillButtons[i].directionXZ = Vector3.zero;
@@ -132,17 +166,20 @@ public class ExampleActor : MonoBehaviour {
         msg.PopText("Canceled skill " + i);
     }
 
-    protected Vector3 GetSkillMarkerPosition(int i) {
+    protected Vector3 GetSkillMarkerPosition(int i)
+    {
         return this.transform.position +
             skillButtons[i].directionXZ * skillSettings[i].range;
     }
 
-    public void ResetPosition() {
+    public void ResetPosition()
+    {
         this.transform.position = Vector3.up;
     }
 
     [Serializable]
-    public class SkillSetting {
+    public class SkillSetting
+    {
         public GameObject skillPrefab;
         public float rotationSpeed;
         public float startingSize;
@@ -157,19 +194,25 @@ public class ExampleActor : MonoBehaviour {
 
         protected SkillRotatingBox skill;
 
-        public void SetMarkerCanCastSkill(bool can) {
-            if (renderer == null) {
+        public void SetMarkerCanCastSkill(bool can)
+        {
+            if (renderer == null)
+            {
                 renderer = skillMarker.GetComponent<MeshRenderer>();
             }
 
-            if (can) {
+            if (can)
+            {
                 renderer.material = markerActivateSkillTrue;
-            } else {
+            }
+            else
+            {
                 renderer.material = markerActivateSkillFalse;
             }
         }
 
-        public void SpawnSkillAt(Vector3 position) {
+        public void SpawnSkillAt(Vector3 position)
+        {
             skill = this.skillPrefab.GetComponent<SkillRotatingBox>();
             skill.size0 = this.startingSize;
             skill.sizeDecaySpeed = this.sizeDecaySpeed;
