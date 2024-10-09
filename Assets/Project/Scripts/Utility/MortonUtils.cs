@@ -1,6 +1,8 @@
+using System.Xml;
 using Unity.Burst;
 using Unity.Mathematics;
 using UnityEngine;
+using Zuy.TenebrousRecursion.Component;
 
 namespace Zuy.TenebrousRecursion.Utility
 {
@@ -39,6 +41,12 @@ namespace Zuy.TenebrousRecursion.Utility
             n = (n ^ (n >> 4)) & 0x00ff00ff;
             n = (n ^ (n >> 8)) & 0x0000ffff;
             return (int)n;
+        }
+
+        [BurstCompile]
+        public static bool IsInsideCell(in uint mortonCheck, in Cell cell)
+        {
+            return mortonCheck == cell.mortonCode;
         }
     }
 }
