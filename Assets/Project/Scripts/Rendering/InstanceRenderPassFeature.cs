@@ -4,6 +4,7 @@ using System.Linq;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Jobs;
 using Unity.Profiling;
 using Unity.Transforms;
 using UnityEngine;
@@ -112,6 +113,10 @@ class InstanceRenderPass : ScriptableRenderPass
         if (entities.IsCreated) entities.Dispose();
     }
 
+    NativeArray<LocalToWorld> a;
+    NativeArray<MaterialOverrideOffset> b;
+
+
     [System.Obsolete]
     public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
     {
@@ -126,6 +131,7 @@ class InstanceRenderPass : ScriptableRenderPass
                 entities = _enemyQuery.ToEntityArray(Allocator.Persistent);
                 _renderData.Clear();
                 _entityManager.GetAllUniqueSharedComponentsManaged(_renderData);
+
             }
 
 
@@ -143,23 +149,17 @@ class InstanceRenderPass : ScriptableRenderPass
 
             _batcher.Clear();
 
-            // // Only update render data when necessary
-            // if (_shouldUpdateRenderData)
-            // {
-            //     _renderData.Clear();
-            //     _entityManager.GetAllUniqueSharedComponentsManaged(_renderData);
-            //     _shouldUpdateRenderData = false;
-            // }
-
-            // _renderData.Clear();
-            // _entityManager.GetAllUniqueSharedComponentsManaged(_renderData);
-            // _shouldUpdateRenderData = false;
-
             if (_renderData.Count <= 1)
                 return;
 
+
+            a = _enemyQuery.ToComponentDataArray<LocalToWorld>(Allocator.Temp);
+            b = _enemyQuery.ToComponentDataArray<MaterialOverrideOffset>(Allocator.Temp);
+
+
             Render();
             context.ExecuteCommandBuffer(_commandBuffer);
+
         }
     }
 
@@ -167,18 +167,68 @@ class InstanceRenderPass : ScriptableRenderPass
     {
         using (RenderMarker.Auto()) // Profiling Render method
         {
+            if (a.Count() == 0 || b.Count() == 0)
+                return;
+
             data = _renderData[1];
 
-            foreach (var entity in entities)
+            // foreach (var entity in entities)
+            // {
+            //     Batch(entity);
+            // }
+
+            int count = entities.Count();
+            batchCount = count;
+            for (int i = 0; i < count; i++)
             {
-                Batch(entity);
+                var loc = a[i];
+                matrix[i] = loc.Value;
+
+                var materialOverride = b[i];
+                offsetScaleArray[i] = new Vector4(materialOverride.Offset.x, materialOverride.Offset.y,
+                                                           materialOverride.Scale.x, materialOverride.Scale.y);
+
+                var spriteFrameBuffer = _entityManager.GetBuffer<SpriteFrameElement>(entities[i]);
+                if (spriteFrameBuffer.Length > 0)
+                {
+                    spriteOffsetArray[i] = spriteFrameBuffer[0].offset;
+                }
+                else
+                {
+                    spriteOffsetArray[i] = Vector2.zero;
+                }
             }
 
-            // for (int i = 0; i < entities.Count(); i++)
-            // {
-            //     Batch(entities[i]);
-            // }
             Submit();
+
+
+            a.Dispose();
+            b.Dispose();
+        }
+    }
+    [BurstCompile]
+    private struct ProcessEntitiesJob : IJobParallelFor
+    {
+        [ReadOnly] public NativeArray<Entity> Entities;
+        [ReadOnly] public ComponentLookup<LocalToWorld> LocalToWorldFromEntity;
+        [ReadOnly] public ComponentLookup<MaterialOverrideOffset> MaterialOverrideFromEntity;
+        [ReadOnly] public BufferLookup<SpriteFrameElement> SpriteFrameFromEntity;
+
+        [WriteOnly] public NativeArray<Matrix4x4> Matrices;
+        [WriteOnly] public NativeArray<Vector4> OffsetScales;
+        [WriteOnly] public NativeArray<Vector2> SpriteOffsets;
+
+        public void Execute(int index)
+        {
+            Entity entity = Entities[index];
+            Matrices[index] = LocalToWorldFromEntity.GetRefRO(entity).ValueRO.Value;
+
+            MaterialOverrideOffset materialOverride = MaterialOverrideFromEntity.GetRefRO(entity).ValueRO;
+            OffsetScales[index] = new Vector4(materialOverride.Offset.x, materialOverride.Offset.y,
+                                              materialOverride.Scale.x, materialOverride.Scale.y);
+
+            DynamicBuffer<SpriteFrameElement> spriteFrameBuffer = SpriteFrameFromEntity[entity];
+            SpriteOffsets[index] = spriteFrameBuffer.Length > 0 ? spriteFrameBuffer[0].offset : Vector2.zero;
         }
     }
 
@@ -199,11 +249,7 @@ class InstanceRenderPass : ScriptableRenderPass
         }
     }
 
-    //   private readonly List<Vector4> offsetScaleList = new List<Vector4>(batchSize);
     private readonly List<Vector4> spriteOffsetList = new List<Vector4>(batchSize);
-
-    // private Vector4[] offsetScaleArr = new Vector4[batchSize];
-    // private Vector4[] spriteOffsetArr = new Vector4[batchSize];
 
     private void SetMaterialProperties()
     {
@@ -221,15 +267,14 @@ class InstanceRenderPass : ScriptableRenderPass
         propertyBlock.SetTexture("_MainTex", ConfigManager.Instance.textureSheet);
     }
 
-
     private void Batch(Entity entity)
     {
         using (BatchMarker.Auto())
         {
-            if (batchCount >= batchSize)
-            {
-                Submit();
-            }
+            // if (batchCount >= batchSize)
+            // {
+            //     Submit();
+            // }
 
             var loc = _entityManager.GetComponentData<LocalToWorld>(entity);
             matrix[batchCount] = loc.Value;
