@@ -39,4 +39,22 @@ namespace Zuy.TenebrousRecursion.Job
             }
         }
     }
+
+    [BurstCompile]
+    public partial struct SpriteAnimatedJob : IJobEntity
+    {
+        [ReadOnly] public double elapsedTime;
+
+        public void Execute(ref MaterialOverrideOffset materialOverrideOffset, in Enemy enemy, in DynamicBuffer<SpriteFrameElement> spriteFrames)
+        {
+            int frameIndex = (int)(elapsedTime * 20) % spriteFrames.Length;
+            var frame = spriteFrames[frameIndex];
+            materialOverrideOffset = new MaterialOverrideOffset
+            {
+                Offset = frame.offset,
+                Scale = materialOverrideOffset.Scale
+            };
+
+        }
+    }
 }

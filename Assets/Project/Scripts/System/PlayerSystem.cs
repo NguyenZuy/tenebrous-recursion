@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Zuy.TenebrousRecursion.Component;
 using Zuy.TenebrousRecursion.Hybrid;
+using Zuy.TenebrousRecursion.Mono;
 
 namespace Zuy.TenebrousRecursion.System
 {

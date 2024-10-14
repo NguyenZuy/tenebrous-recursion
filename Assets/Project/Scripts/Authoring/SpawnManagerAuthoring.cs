@@ -1,5 +1,6 @@
 using Unity.Entities;
 using UnityEngine;
+using Zuy.TenebrousRecursion.Component;
 
 namespace Zuy.TenebrousRecursion.Authoring
 {
@@ -9,7 +10,12 @@ namespace Zuy.TenebrousRecursion.Authoring
         {
             public override void Bake(SpawnManagerAuthoring authoring)
             {
+                var entity = GetEntity(authoring, TransformUsageFlags.None);
 
+                AddComponent(entity, new SpawnEnemyManager()
+                {
+                    isSpawn = true
+                });
             }
         }
     }

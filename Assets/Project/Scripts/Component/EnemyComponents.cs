@@ -1,4 +1,6 @@
 using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Rendering;
 
 namespace Zuy.TenebrousRecursion.Component
 {
@@ -6,5 +8,18 @@ namespace Zuy.TenebrousRecursion.Component
     {
         public uint mortonCode;
         public Entity curCell;
+    }
+
+    [MaterialProperty("_OffsetXYScaleZW")]
+    public struct MaterialOverrideOffset : IComponentData
+    {
+        public float2 Offset;
+        public float2 Scale;
+    }
+
+    public struct SpriteFrameElement : IBufferElementData
+    {
+        public float2 offset;
+        public bool isLast;
     }
 }

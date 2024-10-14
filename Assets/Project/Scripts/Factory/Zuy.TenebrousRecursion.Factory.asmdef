@@ -1,0 +1,23 @@
+{
+    "name": "Zuy.TenebrousRecursion.Factory",
+    "rootNamespace": "Zuy.TenebrousRecursion.Factory",
+    "references": [
+        "GUID:734d92eba21c94caba915361bd5ac177",
+        "GUID:e0cd26848372d4e5c891c569017e11f1",
+        "GUID:2665a8d13d1b3f18800f46e256720795",
+        "GUID:a5baed0c9693541a5bd947d336ec7659",
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:db2f89527c4ce0404b7747cfc82b6764",
+        "GUID:ef2c4ae12dfca0469b229181125baee9",
+        "GUID:d81f2a849aea68540913f29541e0a434"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

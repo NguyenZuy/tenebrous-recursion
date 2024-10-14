@@ -47,6 +47,12 @@ namespace Zuy.TenebrousRecursion.System
             };
             state.Dependency = getCurCellJob.ScheduleParallel(state.Dependency);
 
+            var animatedJob = new SpriteAnimatedJob()
+            {
+                elapsedTime = SystemAPI.Time.ElapsedTime
+            };
+            state.Dependency = animatedJob.ScheduleParallel(state.Dependency);
+
             state.CompleteDependency();
         }
     }

@@ -1,6 +1,7 @@
-using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
+using Unity.Burst;
 
 namespace Zuy.TenebrousRecursion.Job
 {
+    // [BurstCompile]
+    // public struct SpawnJob : IJOb
 }

@@ -1,0 +1,17 @@
+{
+    "name": "Zuy.TenebrousRecursion.Mono",
+    "rootNamespace": "Zuy.TenebrousRecursion.Mono",
+    "references": [
+        "GUID:d81f2a849aea68540913f29541e0a434",
+        "GUID:c7e0381308201ad458e4d447c8b42638"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
