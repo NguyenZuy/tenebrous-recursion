@@ -14,7 +14,6 @@ namespace Zuy.TenebrousRecursion.Authoring
 
                 AddComponent(entity, new SpawnEnemyManager()
                 {
-                    isSpawn = true
                 });
             }
         }

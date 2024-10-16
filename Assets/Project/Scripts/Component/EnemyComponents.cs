@@ -8,6 +8,7 @@ namespace Zuy.TenebrousRecursion.Component
     {
         public uint mortonCode;
         public Entity curCell;
+        public float moveSpeed;
     }
 
     [MaterialProperty("_OffsetXYScaleZW")]

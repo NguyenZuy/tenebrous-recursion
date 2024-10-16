@@ -57,4 +57,20 @@ namespace Zuy.TenebrousRecursion.Job
 
         }
     }
+
+    [BurstCompile]
+    public partial struct MovementJob : IJobEntity
+    {
+        [ReadOnly] public float3 playerPos;
+        [ReadOnly] public float deltaTime;
+
+        void Execute(ref LocalTransform localTransform, in Enemy enemy)
+        {
+            // Calculate direction towards the player's position
+            float3 direction = math.normalize(playerPos - localTransform.Position);
+
+            // Move towards the player's position with the specified speed
+            localTransform.Position += direction * enemy.moveSpeed * deltaTime;
+        }
+    }
 }

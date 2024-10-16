@@ -3,7 +3,8 @@
     "rootNamespace": "Zuy.TenebrousRecursion.Mono",
     "references": [
         "GUID:d81f2a849aea68540913f29541e0a434",
-        "GUID:c7e0381308201ad458e4d447c8b42638"
+        "GUID:c7e0381308201ad458e4d447c8b42638",
+        "GUID:5a5ea21d32a48aa7696ca90cde3e522e"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

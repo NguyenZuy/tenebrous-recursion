@@ -1,10 +1,7 @@
-using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Jobs;
 using Unity.Profiling;
 using Unity.Transforms;
 using UnityEngine;
@@ -206,31 +203,6 @@ class InstanceRenderPass : ScriptableRenderPass
             b.Dispose();
         }
     }
-    [BurstCompile]
-    private struct ProcessEntitiesJob : IJobParallelFor
-    {
-        [ReadOnly] public NativeArray<Entity> Entities;
-        [ReadOnly] public ComponentLookup<LocalToWorld> LocalToWorldFromEntity;
-        [ReadOnly] public ComponentLookup<MaterialOverrideOffset> MaterialOverrideFromEntity;
-        [ReadOnly] public BufferLookup<SpriteFrameElement> SpriteFrameFromEntity;
-
-        [WriteOnly] public NativeArray<Matrix4x4> Matrices;
-        [WriteOnly] public NativeArray<Vector4> OffsetScales;
-        [WriteOnly] public NativeArray<Vector2> SpriteOffsets;
-
-        public void Execute(int index)
-        {
-            Entity entity = Entities[index];
-            Matrices[index] = LocalToWorldFromEntity.GetRefRO(entity).ValueRO.Value;
-
-            MaterialOverrideOffset materialOverride = MaterialOverrideFromEntity.GetRefRO(entity).ValueRO;
-            OffsetScales[index] = new Vector4(materialOverride.Offset.x, materialOverride.Offset.y,
-                                              materialOverride.Scale.x, materialOverride.Scale.y);
-
-            DynamicBuffer<SpriteFrameElement> spriteFrameBuffer = SpriteFrameFromEntity[entity];
-            SpriteOffsets[index] = spriteFrameBuffer.Length > 0 ? spriteFrameBuffer[0].offset : Vector2.zero;
-        }
-    }
 
     private void Submit()
     {
@@ -265,35 +237,5 @@ class InstanceRenderPass : ScriptableRenderPass
         propertyBlock.SetVectorArray("_OffsetXYScaleZW", offsetScaleArray);
         propertyBlock.SetVectorArray("_SpriteOffset", spriteOffsetList);
         propertyBlock.SetTexture("_MainTex", ConfigManager.Instance.textureSheet);
-    }
-
-    private void Batch(Entity entity)
-    {
-        using (BatchMarker.Auto())
-        {
-            // if (batchCount >= batchSize)
-            // {
-            //     Submit();
-            // }
-
-            var loc = _entityManager.GetComponentData<LocalToWorld>(entity);
-            matrix[batchCount] = loc.Value;
-
-            var materialOverride = _entityManager.GetComponentData<MaterialOverrideOffset>(entity);
-            offsetScaleArray[batchCount] = new Vector4(materialOverride.Offset.x, materialOverride.Offset.y,
-                                                       materialOverride.Scale.x, materialOverride.Scale.y);
-
-            var spriteFrameBuffer = _entityManager.GetBuffer<SpriteFrameElement>(entity);
-            if (spriteFrameBuffer.Length > 0)
-            {
-                spriteOffsetArray[batchCount] = spriteFrameBuffer[0].offset;
-            }
-            else
-            {
-                spriteOffsetArray[batchCount] = Vector2.zero;
-            }
-
-            batchCount++;
-        }
     }
 }

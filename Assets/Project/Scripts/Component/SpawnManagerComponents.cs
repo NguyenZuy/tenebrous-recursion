@@ -4,9 +4,7 @@ namespace Zuy.TenebrousRecursion.Component
 {
     public struct SpawnEnemyManager : IComponentData
     {
-        public bool isSpawn;
-        public int number;
-        public int type;
+        public bool isInitialize; // Mark to start the episode
     }
 
     public struct PooledTag : IComponentData { }

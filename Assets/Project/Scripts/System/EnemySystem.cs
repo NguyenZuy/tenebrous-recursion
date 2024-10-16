@@ -1,6 +1,7 @@
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Transforms;
 using Zuy.TenebrousRecursion.Component;
 using Zuy.TenebrousRecursion.Job;
 
@@ -13,6 +14,7 @@ namespace Zuy.TenebrousRecursion.System
     {
         private EntityQuery _gridQuery;
         private EntityQuery _cellQuery;
+        private EntityQuery _playerQuery;
 
         [BurstCompile]
         public void OnCreate(ref SystemState state)
@@ -23,6 +25,11 @@ namespace Zuy.TenebrousRecursion.System
 
             _cellQuery = new EntityQueryBuilder(Allocator.Temp)
                 .WithAll<Cell>()
+                .Build(ref state);
+
+            _playerQuery = new EntityQueryBuilder(Allocator.Temp)
+                .WithAll<Player>()
+                .WithAllRW<LocalTransform>()
                 .Build(ref state);
         }
 
@@ -52,6 +59,15 @@ namespace Zuy.TenebrousRecursion.System
                 elapsedTime = SystemAPI.Time.ElapsedTime
             };
             state.Dependency = animatedJob.ScheduleParallel(state.Dependency);
+
+            var player = _playerQuery.GetSingleton<LocalTransform>();
+
+            var movementJob = new MovementJob()
+            {
+                deltaTime = SystemAPI.Time.DeltaTime,
+                playerPos = player.Position
+            };
+            state.Dependency = movementJob.ScheduleParallel(state.Dependency);
 
             state.CompleteDependency();
         }

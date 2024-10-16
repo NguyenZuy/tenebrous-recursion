@@ -21,7 +21,7 @@ namespace Zuy.TenebrousRecursion.Authoring
 
                 AddComponent(entity, new Enemy()
                 {
-
+                    //moveSpeed = 2f
                 });
 
                 var texelSize = authoring.textureSheet.texelSize;
