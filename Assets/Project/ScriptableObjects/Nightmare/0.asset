@@ -30,40 +30,40 @@ MonoBehaviour:
   - level: 3
     timeToAppear: 600
   waves:
-  - timeToAppear: 30
+  - timeToAppear: 5
     id1: 0
     number1: 100
-    id2: 0
+    id2: 1
     number2: 500
-    id3: 0
+    id3: 2
     number3: 200
   - timeToAppear: 60
     id1: 0
     number1: 100
-    id2: 0
+    id2: 1
     number2: 500
-    id3: 0
+    id3: 2
     number3: 200
   - timeToAppear: 90
     id1: 0
     number1: 100
-    id2: 0
+    id2: 1
     number2: 500
-    id3: 0
+    id3: 2
     number3: 200
   - timeToAppear: 120
     id1: 0
     number1: 100
-    id2: 0
+    id2: 1
     number2: 500
-    id3: 0
+    id3: 2
     number3: 200
   - timeToAppear: 150
     id1: 0
     number1: 100
-    id2: 0
+    id2: 1
     number2: 500
-    id3: 0
+    id3: 2
     number3: 200
   gateSpawnPositions:
   - {x: 10, y: 10, z: 0}

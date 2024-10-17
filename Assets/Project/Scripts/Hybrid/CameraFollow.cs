@@ -8,8 +8,8 @@ namespace Zuy.TenebrousRecursion.Hybrid
 {
     public class CameraFollow : MonoBehaviour
     {
-        private float3 offset = new float3(0f, 0f, -10f);
-        private float smoothTime = 0.25f;
+        public float3 offset = new float3(0f, 0f, -10f);
+        public float smoothTime = 0.25f;
         private Vector3 velocity = Vector3.zero;
 
         private World _world;

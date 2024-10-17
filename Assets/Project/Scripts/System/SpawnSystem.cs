@@ -83,7 +83,7 @@ namespace Zuy.TenebrousRecursion.System
             {
                 nextWave.isSpawned = true;
                 waveBuffer[nextWaveIndex] = nextWave;
-                SpawnFactory.SpawnWave(EntityManager, nextWave, gates, random);
+                SpawnFactory.SpawnWave(EntityManager, nextWave, gates, ref random);
             }
         }
 

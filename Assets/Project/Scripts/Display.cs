@@ -12,7 +12,7 @@ public class Display : MonoBehaviour
     {
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 60;
-        OnDemandRendering.renderFrameInterval = 2;
+        OnDemandRendering.renderFrameInterval = 1;
     }
 
     // Update is called once per frame

@@ -11,26 +11,20 @@ namespace Zuy.TenebrousRecursion.Mono
     {
         [SerializeField] private EnemySO[] _enemyConfigs;
 
-        public ReadOnlyDictionary<int, EnemySO> enemyConfigsDict;
-
-        void Start()
-        {
-            Dictionary<int, EnemySO> builderDict = new Dictionary<int, EnemySO>();
-
-            foreach (var so in _enemyConfigs)
-            {
-                builderDict.Add(so.type, so);
-            }
-
-            this.enemyConfigsDict = new ReadOnlyDictionary<int, EnemySO>(builderDict);
-        }
-
         public EnemySO GetEnemeyConfigByType(int type)
         {
-            if (enemyConfigsDict.TryGetValue(type, out EnemySO result))
-                return result;
-            else
-                return null;
+            EnemySO result = null;
+
+            foreach (var config in _enemyConfigs)
+            {
+                if (config.type == type)
+                {
+                    result = config;
+                    break;
+                }
+            }
+
+            return result;
         }
     }
 }

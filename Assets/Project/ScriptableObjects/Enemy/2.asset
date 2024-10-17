@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0ec4ada25e42e26a6b010ed0889f9dd8, type: 3}
-  m_Name: 0
+  m_Name: 2
   m_EditorClassIdentifier: 
-  type: 0
+  type: 2
   hp: 100
   defense: 0
-  moveSpeed: 3
+  moveSpeed: 5
   atk: 10
   material: {fileID: 2100000, guid: 8c5b4f69c56ad22e282384263dcfcb75, type: 2}
   mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}

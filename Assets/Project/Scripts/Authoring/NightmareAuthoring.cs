@@ -36,6 +36,8 @@ namespace Zuy.TenebrousRecursion.Authoring
                 {
                     waveBuffer.Add(new Component.WaveConfig()
                     {
+                        timeToAppear = wave.timeToAppear,
+
                         id1 = wave.id1,
                         number1 = wave.number1,
 

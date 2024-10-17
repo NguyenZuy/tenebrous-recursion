@@ -14,7 +14,7 @@ namespace Zuy.TenebrousRecursion.Authoring
 
                 AddComponent(entity, new Player()
                 {
-                    moveSpeed = 1.5f,
+                    moveSpeed = 8f,
                 });
             }
         }
