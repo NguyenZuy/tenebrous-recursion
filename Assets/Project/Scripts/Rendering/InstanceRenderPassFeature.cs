@@ -138,21 +138,21 @@ public class InstanceRenderPass : ScriptableRenderPass
         {
             if (!_isInitialized)
             {
-                Debug.LogWarning("InstanceRenderPass not initialized.");
                 return;
             }
 
-            PrepareForExecution();
+            int entityCount = _enemyQuery.CalculateEntityCount();
+            if (entityCount == 0)
+                return;
+
+            PrepareForExecution(entityCount);
             Render();
             context.ExecuteCommandBuffer(_commandBuffer);
         }
     }
 
-    private void PrepareForExecution()
+    private void PrepareForExecution(int entityCount)
     {
-        int entityCount = _enemyQuery.CalculateEntityCount();
-        Debug.Log($"Entity Count: {entityCount}");
-
         EnsureEntityArraySize(entityCount);
         UpdateRenderData();
         PrepareCommandBuffer();
