@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aac3c2a3de61b9ed49594b66d40e887d, type: 3}
+  m_Name: 0
+  m_EditorClassIdentifier: 
+  gates:
+  - level: 1
+    timeToAppear: 0
+  - level: 1
+    timeToAppear: 0
+  - level: 1
+    timeToAppear: 0
+  - level: 1
+    timeToAppear: 0
+  - level: 1
+    timeToAppear: 0
+  - level: 2
+    timeToAppear: 300
+  - level: 2
+    timeToAppear: 300
+  - level: 3
+    timeToAppear: 600
+  waves:
+  - timeToAppear: 30
+    id1: 0
+    number1: 100
+    id2: 0
+    number2: 500
+    id3: 0
+    number3: 200
+  - timeToAppear: 60
+    id1: 0
+    number1: 100
+    id2: 0
+    number2: 500
+    id3: 0
+    number3: 200
+  - timeToAppear: 90
+    id1: 0
+    number1: 100
+    id2: 0
+    number2: 500
+    id3: 0
+    number3: 200
+  - timeToAppear: 120
+    id1: 0
+    number1: 100
+    id2: 0
+    number2: 500
+    id3: 0
+    number3: 200
+  - timeToAppear: 150
+    id1: 0
+    number1: 100
+    id2: 0
+    number2: 500
+    id3: 0
+    number3: 200
+  gateSpawnPositions:
+  - {x: 10, y: 10, z: 0}
+  - {x: 20, y: 20, z: 0}
+  - {x: 30, y: 30, z: 0}
+  - {x: 40, y: 40, z: 0}
+  - {x: 10, y: 40, z: 0}
+  - {x: 20, y: 40, z: 0}
+  - {x: 30, y: 40, z: 0}
+  - {x: 10, y: 20, z: 0}

@@ -15,48 +15,54 @@ namespace Zuy.TenebrousRecursion.System
     [RequireMatchingQueriesForUpdate]
     partial class SpawnSystem : SystemBase
     {
-        private EntityQuery _spawnManagerQuery;
         private EntityQuery _nightmareQuery;
+        private EntityQuery _gateQuery;
 
         protected override void OnCreate()
         {
-            _spawnManagerQuery = new EntityQueryBuilder(Allocator.Temp)
-                .WithAllRW<SpawnEnemyManager>()
+            _nightmareQuery = new EntityQueryBuilder(Allocator.Temp)
+                .WithAllRW<Nightmare>()
+                .WithAll<GateConfig, WaveConfig, GateSpawnPositionConfig>()
                 .Build(this);
 
-            _nightmareQuery = new EntityQueryBuilder(Allocator.Temp)
-                .WithAll<GateConfig, WaveConfig, GateSpawnPositionConfig>()
+            _gateQuery = new EntityQueryBuilder(Allocator.Temp)
+                .WithAll<Gate>()
                 .Build(this);
 
             var enenmyArchetype = EntityManager.CreateArchetype(
                 typeof(LocalTransform),
                 typeof(LocalToWorld),
                 typeof(Enemy),
-                typeof(InstanceRendererData)
+                typeof(InstanceRendererData),
+                typeof(MaterialOverrideOffset),
+                typeof(SpriteFrameElement)
             );
 
             var gateArchetype = EntityManager.CreateArchetype(
                 typeof(Gate)
             );
 
-            SpawnFactory.Init(enenmyArchetype);
+            SpawnFactory.Init(enenmyArchetype, gateArchetype);
         }
 
         protected override void OnUpdate()
         {
-            var spawnManager = _spawnManagerQuery.GetSingletonRW<SpawnEnemyManager>().ValueRW;
             var nightmare = _nightmareQuery.GetSingletonRW<Nightmare>().ValueRW;
 
             float deltaTime = SystemAPI.Time.DeltaTime;
             Unity.Mathematics.Random random = new Unity.Mathematics.Random((uint)UnityEngine.Random.Range(1, 999999));
 
             if (nightmare.isInitialized)
+            {
                 nightmare.elapsedTime += deltaTime;
+                _nightmareQuery.SetSingleton(nightmare);
+            }
 
             // Init in start of nightmare
             if (!nightmare.isInitialized)
             {
                 nightmare.isInitialized = true;
+                _nightmareQuery.SetSingleton(nightmare);
 
                 var gateBuffer = _nightmareQuery.GetSingletonBuffer<GateConfig>(true);
                 var gateSpawnPosBuffer = _nightmareQuery.GetSingletonBuffer<GateSpawnPositionConfig>();
@@ -68,45 +74,18 @@ namespace Zuy.TenebrousRecursion.System
                 return;
             }
 
-            var waveBuffer = _nightmareQuery.GetSingletonBuffer<WaveConfig>(true);
-            var nextWave = waveBuffer[nightmare.GetNextWaveIndex()];
-            if (Utils.IsReachTime(nextWave.timeToAppear, nightmare.elapsedTime))
+            var gates = _gateQuery.ToComponentDataArray<Gate>(Allocator.Temp);
+
+            var waveBuffer = _nightmareQuery.GetSingletonBuffer<WaveConfig>(false);
+            var nextWaveIndex = nightmare.GetNextWaveIndex();
+            var nextWave = waveBuffer[nextWaveIndex];
+            if (!nextWave.isSpawned && Utils.IsReachTime(nextWave.timeToAppear, nightmare.elapsedTime))
             {
-
+                nextWave.isSpawned = true;
+                waveBuffer[nextWaveIndex] = nextWave;
+                SpawnFactory.SpawnWave(EntityManager, nextWave, gates, random);
             }
-
-            // var waveBuffer = _waveManagerQuery.GetSingletonBuffer<Wave>(true);
-
-            // if (spawnManager.ValueRO.isSpawn)
-            // {
-            //     int nextWaveIndex = waveManager.GetNextWaveIndex();
-            //     if (nextWaveIndex < waveBuffer.Length)
-            //     {
-            //         Wave nextWave = waveBuffer[nextWaveIndex];
-            //         CreateWave(nextWave);
-            //     }
-
-            //     spawnManager.ValueRW.isSpawn = false;
-            // }
         }
-
-        // private void CreateWave(Wave wave)
-        // {
-        //     if (wave.id1 != 0)
-        //         SendCreate(wave.id1, wave.quantity1);
-
-        //     if (wave.id2 != 0)
-        //         SendCreate(wave.id2, wave.quantity2);
-
-        //     if (wave.id3 != 0)
-        //         SendCreate(wave.id3, wave.quantity3);
-        // }
-
-        // private void SendCreate(int type, int quantity)
-        // {
-        //     // Use the cached random instance
-        //     SpawnFactory.Create(EntityManager, _enemyArchetype, type, quantity);
-        // }
 
         [BurstCompile]
         public static class Utils
@@ -114,7 +93,7 @@ namespace Zuy.TenebrousRecursion.System
             [BurstCompile]
             public static bool IsReachTime(in float time, in double elapsedTime)
             {
-                return time >= elapsedTime;
+                return time <= elapsedTime;
             }
 
             [BurstCompile]

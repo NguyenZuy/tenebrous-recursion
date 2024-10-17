@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using GluonGui.Dialog;
 using UnityEngine;
 using Zuy.TenebrousRecursion.ScriptableObject;
 using Zuy.Workspace.Base;
@@ -8,14 +9,6 @@ namespace Zuy.TenebrousRecursion.Mono
 {
     public class ConfigManager : BaseSingleton<ConfigManager>
     {
-        public Material material;
-        public Mesh mesh;
-        public float cullingDistance;
-
-        public float gridPixelSize;
-        public Texture2D textureSheet;
-        public Sprite[] spriteFrames;
-
         [SerializeField] private EnemySO[] _enemyConfigs;
 
         public ReadOnlyDictionary<int, EnemySO> enemyConfigsDict;
@@ -30,6 +23,14 @@ namespace Zuy.TenebrousRecursion.Mono
             }
 
             this.enemyConfigsDict = new ReadOnlyDictionary<int, EnemySO>(builderDict);
+        }
+
+        public EnemySO GetEnemeyConfigByType(int type)
+        {
+            if (enemyConfigsDict.TryGetValue(type, out EnemySO result))
+                return result;
+            else
+                return null;
         }
     }
 }

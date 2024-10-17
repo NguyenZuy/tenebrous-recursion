@@ -174,7 +174,7 @@ class InstanceRenderPass : ScriptableRenderPass
             //     Batch(entity);
             // }
 
-            int count = entities.Count();
+            int count = Mathf.Min(entities.Count(), batchSize); // Prevents overflow
             batchCount = count;
             for (int i = 0; i < count; i++)
             {
@@ -236,6 +236,6 @@ class InstanceRenderPass : ScriptableRenderPass
 
         propertyBlock.SetVectorArray("_OffsetXYScaleZW", offsetScaleArray);
         propertyBlock.SetVectorArray("_SpriteOffset", spriteOffsetList);
-        propertyBlock.SetTexture("_MainTex", ConfigManager.Instance.textureSheet);
+        propertyBlock.SetTexture("_MainTex", ConfigManager.Instance.GetEnemeyConfigByType(0).textureSheet);
     }
 }

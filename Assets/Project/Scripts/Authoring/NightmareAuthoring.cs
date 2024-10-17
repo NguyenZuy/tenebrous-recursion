@@ -1,5 +1,6 @@
 using Unity.Entities;
 using UnityEngine;
+using Zuy.TenebrousRecursion.Component;
 using Zuy.TenebrousRecursion.ScriptableObject;
 
 namespace Zuy.TenebrousRecursion.Authoring
@@ -14,6 +15,11 @@ namespace Zuy.TenebrousRecursion.Authoring
             public override void Bake(NightmareAuthoring authoring)
             {
                 var entity = GetEntity(authoring, TransformUsageFlags.None);
+
+                AddComponent(entity, new Nightmare()
+                {
+
+                });
 
                 var gateBuffer = AddBuffer<Component.GateConfig>(entity);
                 foreach (var gate in authoring.nightmareSO.gates)
@@ -46,7 +52,7 @@ namespace Zuy.TenebrousRecursion.Authoring
                 {
                     gateSpawnPosBuffer.Add(new Component.GateSpawnPositionConfig()
                     {
-                        value = spawnPos.transform.position
+                        value = spawnPos
                     });
                 }
             }

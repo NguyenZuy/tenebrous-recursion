@@ -47,6 +47,10 @@ namespace Zuy.TenebrousRecursion.Job
 
         public void Execute(ref MaterialOverrideOffset materialOverrideOffset, in Enemy enemy, in DynamicBuffer<SpriteFrameElement> spriteFrames)
         {
+            if (spriteFrames.Length == 0)
+            {
+                return; // Exit early if no frames are available.
+            }
             int frameIndex = (int)(elapsedTime * 20) % spriteFrames.Length;
             var frame = spriteFrames[frameIndex];
             materialOverrideOffset = new MaterialOverrideOffset

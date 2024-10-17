@@ -1,4 +1,3 @@
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -14,9 +13,12 @@ namespace Zuy.TenebrousRecursion.Factory
         private static EntityArchetype _enemyArchetype;
         private static EntityArchetype _gateArchetype;
 
-        public static void Init(in EntityArchetype enemyArchetype)
+        private const float SPAWN_RADIUS_OF_GATE = 4f;
+
+        public static void Init(in EntityArchetype enemyArchetype, in EntityArchetype gateArchetype)
         {
             _enemyArchetype = enemyArchetype;
+            _gateArchetype = gateArchetype;
         }
 
         public static void SpawnGate(in EntityManager entityManager, in NativeArray<GateConfig> gatesWillSpawn, in NativeArray<GateSpawnPositionConfig> spawnPos)
@@ -33,134 +35,88 @@ namespace Zuy.TenebrousRecursion.Factory
             };
         }
 
-        public static void SpawnWave(in EntityManager entityManager, in WaveConfig waveConfig)
+        public static void SpawnWave(in EntityManager entityManager, in WaveConfig waveConfig, in NativeArray<Gate> gates, in Random random)
         {
-            NativeArray<Entity> entities = entityManager.CreateEntity(_gateArchetype, waveConfig.TotalEnemy(), Allocator.Temp);
+            NativeArray<Entity> entities = entityManager.CreateEntity(_enemyArchetype, waveConfig.TotalEnemy(), Allocator.Temp);
 
             int i = 0;
+            CreateEnemies(ref i, waveConfig.id1, waveConfig.number1, entityManager, entities, gates, random);
+            CreateEnemies(ref i, waveConfig.id2, waveConfig.number2, entityManager, entities, gates, random);
+            CreateEnemies(ref i, waveConfig.id3, waveConfig.number3, entityManager, entities, gates, random);
 
-            for (; i < waveConfig.number1; i++)
+            entities.Dispose();
+            gates.Dispose();
+
+            UnityEngine.Debug.Log("Success!");
+        }
+
+        static void CreateEnemies(ref int i, in int type, in int quantity, in EntityManager entityManager, in NativeArray<Entity> entities, in NativeArray<Gate> gates, in Random random)
+        {
+            ScriptableObject.EnemySO enemyConfig = ConfigManager.Instance.GetEnemeyConfigByType(type);
+            if (enemyConfig == null)
+                return;
+
+            Entity entity;
+
+            for (; i < quantity; i++)
             {
-
+                entity = entities[i];
+                CreateEnemy(entityManager, entity, random, gates, enemyConfig);
             }
         }
 
-        public static void StartNextWave()
+        static void CreateEnemy(in EntityManager entityManager, in Entity entity, in Random random, in NativeArray<Gate> gates, in ScriptableObject.EnemySO enemyConfig)
         {
+            int indexGate = random.NextInt(0, gates.Length);
+            Gate gate = gates[indexGate];
 
+            float3 minBound = new float3(gate.localPos.x - SPAWN_RADIUS_OF_GATE, gate.localPos.y, gate.localPos.y - SPAWN_RADIUS_OF_GATE);
+            float3 maxBound = new float3(gate.localPos.x + SPAWN_RADIUS_OF_GATE, gate.localPos.y, gate.localPos.y + SPAWN_RADIUS_OF_GATE);
+
+            float3 newPos = random.NextFloat3(minBound, maxBound);
+
+            entityManager.SetComponentData(entity, new LocalTransform()
+            {
+                Position = newPos,
+                Scale = 1
+            });
+
+            entityManager.SetComponentData(entity, new Enemy()
+            {
+                moveSpeed = enemyConfig.moveSpeed
+            });
+
+            entityManager.SetSharedComponentManaged(entity, new InstanceRendererData()
+            {
+                CastShadows = ShadowCastingMode.Off,
+                Material = enemyConfig.material,
+                Mesh = enemyConfig.mesh,
+                ReceiveShadows = false,
+                SubMesh = 0,
+                CullDistance = enemyConfig.cullingDistance,
+            });
+
+            var texelSize = enemyConfig.gridPixelSize;
+
+            entityManager.SetComponentData(entity, new MaterialOverrideOffset
+            {
+                Offset = enemyConfig.spriteFrames.Length > 0 // offset
+                    ? enemyConfig.spriteFrames[0].rect.position * texelSize
+                    : float2.zero,
+                Scale = new float2(0.1f, 0.2f) // scale
+            });
+
+            var frameElements = entityManager.GetBuffer<SpriteFrameElement>(entity);
+
+            for (int j = 0; j < enemyConfig.spriteFrames.Length; j++)
+            {
+                bool isLast = j == enemyConfig.spriteFrames.Length - 1;
+                frameElements.Add(new SpriteFrameElement
+                {
+                    offset = enemyConfig.spriteFrames[j].rect.position * texelSize,
+                    isLast = isLast
+                });
+            }
         }
-
-        //     public static void Create(in EntityManager entityManager, in EntityArchetype archetype, in int type, in int number)
-        //     {
-        //         NativeArray<Entity> entities = entityManager.CreateEntity(archetype, 1023, Allocator.Temp);
-        //         var enemyConfigsDict = ConfigManager.Instance.enemyConfigsDict;
-        //         var enemyConfig = enemyConfigsDict[type];
-
-        //         foreach (var entity in entities)
-        //         {
-        //             entityManager.SetComponentData(entity, new Enemy()
-        //             {
-        //                 moveSpeed = enemyConfig.moveSpeed
-        //             });
-
-        //             entityManager.SetSharedComponentManaged(entity, new InstanceRendererData()
-        //             {
-        //                 CastShadows = ShadowCastingMode.Off,
-        //                 Material = enemyConfig.material,
-        //                 Mesh = enemyConfig.mesh,
-        //                 ReceiveShadows = false,
-        //                 SubMesh = 0,
-        //                 CullDistance = enemyConfig.cullingDistance,
-        //             });
-
-        //             float3 newPos = random.NextFloat3(new float3(0, 0, -1), new float3(10, 10, -1));
-        //             entityManager.SetComponentData(entity, new LocalTransform()
-        //             {
-        //                 Position = newPos,
-        //                 Scale = 1
-        //             });
-        //             random.NextUInt();  // This updates the state internally
-
-        //             var texelSize = ConfigManager.Instance.textureSheet.texelSize;
-
-        //             entityManager.AddComponentData(entity, new MaterialOverrideOffset
-        //             {
-        //                 Offset = ConfigManager.Instance.spriteFrames.Length > 0 // offset
-        //                 ? ConfigManager.Instance.spriteFrames[0].rect.position * texelSize
-        //                 : float2.zero,
-        //                 Scale = new float2(0.1f, 0.2f) // scale
-        //             });
-
-        //             var frameElements = entityManager.AddBuffer<SpriteFrameElement>(entity);
-
-        //             for (int i = 0; i < ConfigManager.Instance.spriteFrames.Length; i++)
-        //             {
-        //                 bool isLast = i == ConfigManager.Instance.spriteFrames.Length - 1;
-        //                 frameElements.Add(new SpriteFrameElement
-        //                 {
-        //                     offset = ConfigManager.Instance.spriteFrames[i].rect.position * texelSize,
-        //                     isLast = isLast
-        //                 });
-        //             }
-        //         }
-        //         entities.Dispose();
-        //     }
-
-        //     public static void Create(in EntityManager entityManager, in EntityArchetype archetype, in Random random, in int number, in int type)
-        //     {
-        //         NativeArray<Entity> entities = entityManager.CreateEntity(archetype, 1023, Allocator.Temp);
-        //         var enemyConfigsDict = ConfigManager.Instance.enemyConfigsDict;
-        //         var enemyConfig = enemyConfigsDict[type];
-
-        //         foreach (var entity in entities)
-        //         {
-        //             entityManager.SetComponentData(entity, new Enemy()
-        //             {
-        //                 moveSpeed = enemyConfig.moveSpeed
-        //             });
-
-        //             entityManager.SetSharedComponentManaged(entity, new InstanceRendererData()
-        //             {
-        //                 CastShadows = ShadowCastingMode.Off,
-        //                 Material = enemyConfig.material,
-        //                 Mesh = enemyConfig.mesh,
-        //                 ReceiveShadows = false,
-        //                 SubMesh = 0,
-        //                 CullDistance = enemyConfig.cullingDistance,
-        //             });
-
-        //             float3 newPos = random.NextFloat3(new float3(0, 0, -1), new float3(10, 10, -1));
-        //             entityManager.SetComponentData(entity, new LocalTransform()
-        //             {
-        //                 Position = newPos,
-        //                 Scale = 1
-        //             });
-        //             random.NextUInt();  // This updates the state internally
-
-        //             var texelSize = ConfigManager.Instance.textureSheet.texelSize;
-
-        //             entityManager.AddComponentData(entity, new MaterialOverrideOffset
-        //             {
-        //                 Offset = ConfigManager.Instance.spriteFrames.Length > 0 // offset
-        //                 ? ConfigManager.Instance.spriteFrames[0].rect.position * texelSize
-        //                 : float2.zero,
-        //                 Scale = new float2(0.1f, 0.2f) // scale
-        //             });
-
-        //             var frameElements = entityManager.AddBuffer<SpriteFrameElement>(entity);
-
-        //             for (int i = 0; i < ConfigManager.Instance.spriteFrames.Length; i++)
-        //             {
-        //                 bool isLast = i == ConfigManager.Instance.spriteFrames.Length - 1;
-        //                 frameElements.Add(new SpriteFrameElement
-        //                 {
-        //                     offset = ConfigManager.Instance.spriteFrames[i].rect.position * texelSize,
-        //                     isLast = isLast
-        //                 });
-        //             }
-        //         }
-        //         entities.Dispose();
-        //     }
-        // }
     }
 }

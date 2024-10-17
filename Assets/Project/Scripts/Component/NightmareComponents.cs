@@ -6,7 +6,7 @@ namespace Zuy.TenebrousRecursion.Component
     public struct Nightmare : IComponentData
     {
         public bool isInitialized;
-        public double elapsedTime;
+        public float elapsedTime;
 
         public int curWaveIndex; // Cur wave index in dynamicBuffer
 
@@ -24,6 +24,8 @@ namespace Zuy.TenebrousRecursion.Component
 
     public struct WaveConfig : IBufferElementData
     {
+        public bool isSpawned;
+
         public float timeToAppear; // From time to start the nightmare to now
 
         public int id1;
