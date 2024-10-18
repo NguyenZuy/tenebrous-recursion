@@ -12,10 +12,13 @@ namespace Zuy.TenebrousRecursion.Authoring
             {
                 var entity = GetEntity(authoring, TransformUsageFlags.None);
 
-                // AddComponent(entity, new Gate()
-                // {
+                AddComponent(entity, new Test()
+                {
+                    test1 = new Test1()
+                    {
 
-                // });
+                    }
+                });
             }
         }
     }

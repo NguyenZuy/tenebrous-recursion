@@ -1,3 +1,4 @@
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 
@@ -28,5 +29,15 @@ namespace Zuy.TenebrousRecursion.Component
     public struct CellMember : IBufferElementData
     {
         public Entity memberEntity;
+    }
+
+    public struct Test : IComponentData
+    {
+        public Test1 test1;
+    }
+
+    public struct Test1
+    {
+        NativeArray<Entity> entities;
     }
 }
