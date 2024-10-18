@@ -8,17 +8,6 @@ namespace Zuy.TenebrousRecursion.Authoring
 {
     class CellAuthoring : MonoBehaviour
     {
-        // public ulong mortonCode;
-
-
-        // void Start()
-        // {
-        //     Vector3 localPosition = transform.position;
-        //     int gridX = Mathf.FloorToInt(localPosition.x / transform.parent.GetComponent<GridAuthoring>().cellSize);
-        //     int gridY = Mathf.FloorToInt(localPosition.y / transform.parent.GetComponent<GridAuthoring>().cellSize);
-        //     mortonCode = MortonCode.Encode(gridX, gridY);
-        // }
-
         class Baker : Baker<CellAuthoring>
         {
             public override void Bake(CellAuthoring authoring)
