@@ -16,9 +16,12 @@ namespace Zuy.TenebrousRecursion.Authoring
 
                 ConvertUtils.F3ToF2(authoring.transform.position, out float2 pos);
 
+                float cellSize = authoring.transform.parent.GetComponent<GridAuthoring>().cellSize;
+
                 AddComponent(entity, new Cell()
                 {
-                    mortonCode = MortonUtils.Encode(pos, authoring.transform.parent.GetComponent<GridAuthoring>().cellSize)
+                    mortonCode = MortonUtils.Encode(pos, cellSize),
+                    gridIndex = (int2)math.floor(pos / cellSize)
                 });
 
                 AddBuffer<CellMember>(entity);

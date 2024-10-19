@@ -11,17 +11,11 @@ namespace Zuy.TenebrousRecursion.Component
 
     public struct Cell : IComponentData
     {
-        // float2 minCorner = center - halfSize;
-        // float2 maxCorner = center + halfSize;
-
-        // ulong pointMorton = PointToMorton(point);
-        // ulong minMorton = PointToMorton(minCorner);
-        // ulong maxMorton = PointToMorton(maxCorner);
-
-        // public uint minMorton;
-        // public uint maxMorton;
-
         public uint mortonCode;
+        public int2 gridIndex;
+
+        public int bestCost; // Steps (unit is 1) to the target cell
+        public int2 curDirection;
 
         public float lastTimeToExecuteJob;
     }
