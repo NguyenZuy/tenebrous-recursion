@@ -79,15 +79,7 @@ namespace Zuy.TenebrousRecursion.Job
                 GetNeighborCells(cell, allCells, out NativeList<Cell> neighborCells);
                 GetLastLowestBestCostCell(neighborCells, out Cell lowestBestCostCell);
                 GetDirection(ref cell, lowestBestCostCell);
-                if (cell.gridIndex.Equals(new int2(4, 1)))
-                {
-                    UnityEngine.Debug.Log("Neighbor length: " + neighborCells.Length);
-                    foreach (var neighbor in neighborCells)
-                    {
-                        UnityEngine.Debug.Log($"Neighbor: {neighbor.gridIndex}");
-                    }
-                    UnityEngine.Debug.Log($"Lowest of {cell.gridIndex} is {lowestBestCostCell.gridIndex}");
-                }
+
                 cells[i] = cell;
                 neighborCells.Dispose();
             }

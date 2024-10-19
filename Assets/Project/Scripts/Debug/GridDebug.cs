@@ -1,10 +1,8 @@
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using Zuy.TenebrousRecursion.Component;
-using Zuy.TenebrousRecursion.Constant;
 
 public class GridDebug : MonoBehaviour
 {
@@ -16,7 +14,6 @@ public class GridDebug : MonoBehaviour
 
     private World _world;
     private EntityManager _entityManager;
-    //private RefRW<Player> _player;
     private EntityQuery _cellQuery;
     private EntityQuery _gridQuery;
 
@@ -39,6 +36,9 @@ public class GridDebug : MonoBehaviour
 
     void Update()
     {
+        if (!displayGrid)
+            return;
+
         if (_gridQuery.TryGetSingleton(out grid))
         {
             drawGridSize = grid.gridSize;
