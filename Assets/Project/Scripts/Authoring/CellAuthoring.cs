@@ -16,7 +16,7 @@ namespace Zuy.TenebrousRecursion.Authoring
 
                 ConvertUtils.F3ToF2(authoring.transform.position, out float2 pos);
 
-                float cellSize = authoring.transform.parent.GetComponent<GridAuthoring>().cellSize;
+                float cellSize = authoring.transform.parent.GetComponent<GridAuthoring>().cellDiameter;
 
                 AddComponent(entity, new Cell()
                 {

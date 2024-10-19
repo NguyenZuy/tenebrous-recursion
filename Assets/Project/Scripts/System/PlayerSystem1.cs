@@ -36,7 +36,7 @@ namespace Zuy.TenebrousRecursion.System
 
             var encodeMortonJob = new EncodeMortonForPlayerJob()
             {
-                cellSize = grid.cellSize
+                cellSize = grid.cellDiameter
             };
             state.Dependency = encodeMortonJob.ScheduleParallel(state.Dependency);
 

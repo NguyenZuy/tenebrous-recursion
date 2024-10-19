@@ -6,7 +6,8 @@ namespace Zuy.TenebrousRecursion.Component
 {
     public struct Grid : IComponentData
     {
-        public float cellSize;
+        public int2 gridSize;
+        public int cellDiameter;
     }
 
     public struct Cell : IComponentData
@@ -14,6 +15,7 @@ namespace Zuy.TenebrousRecursion.Component
         public uint mortonCode;
         public int2 gridIndex;
 
+        public int cost;
         public int bestCost; // Steps (unit is 1) to the target cell
         public int2 curDirection;
 

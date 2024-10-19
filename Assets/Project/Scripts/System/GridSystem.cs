@@ -61,6 +61,8 @@ namespace Zuy.TenebrousRecursion.System
             int indexOfPlayerCurCell = Utils.GetCellIndexByEntity(player.curCell, cellEntities);
             Cell playerCurCell = SystemAPI.GetComponentRO<Cell>(cellEntities[indexOfPlayerCurCell]).ValueRO;
 
+            NativeArray<Cell> allCells = _cellQuery1.ToComponentDataArray<Cell>(Allocator.TempJob);
+
             var getInsideAgentsJob = new GetInsideAgentsJob()
             {
                 enemies = enemies,
@@ -78,6 +80,7 @@ namespace Zuy.TenebrousRecursion.System
 
             var calculateFFPFlowFieldJob = new CalculateFFPFlowFieldJob()
             {
+                allCells = allCells,
                 cellTypeHandle = _cellTypeHandle,
             };
             state.Dependency = calculateFFPFlowFieldJob.ScheduleParallel(_cellQuery2, state.Dependency);

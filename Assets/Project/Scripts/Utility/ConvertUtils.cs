@@ -20,6 +20,11 @@ namespace Zuy.TenebrousRecursion.Utility
             return new Vector2(value.x, value.y);
         }
 
+        public static int2 V2ToI2(Vector2Int value)
+        {
+            return new int2(value.x, value.y);
+        }
+
         // Fisher-Yates Shuffle
         [BurstCompile]
         public static void Shuffle<T>(ref DynamicBuffer<T> buffer, in Unity.Mathematics.Random random) where T : unmanaged

@@ -64,6 +64,8 @@ namespace Zuy.TenebrousRecursion.Job
     [BurstCompile]
     public partial struct CalculateFFPFlowFieldJob : IJobChunk
     {
+        [ReadOnly] public NativeArray<Cell> allCells;
+
         public ComponentTypeHandle<Cell> cellTypeHandle;
 
         public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
@@ -74,10 +76,18 @@ namespace Zuy.TenebrousRecursion.Job
             while (enumerator.NextEntityIndex(out int i))
             {
                 Cell cell = cells[i];
-                GetNeighborCells(cell, cells, out NativeList<Cell> neighborCells);
+                GetNeighborCells(cell, allCells, out NativeList<Cell> neighborCells);
                 GetLastLowestBestCostCell(neighborCells, out Cell lowestBestCostCell);
                 GetDirection(ref cell, lowestBestCostCell);
-
+                if (cell.gridIndex.Equals(new int2(4, 1)))
+                {
+                    UnityEngine.Debug.Log("Neighbor length: " + neighborCells.Length);
+                    foreach (var neighbor in neighborCells)
+                    {
+                        UnityEngine.Debug.Log($"Neighbor: {neighbor.gridIndex}");
+                    }
+                    UnityEngine.Debug.Log($"Lowest of {cell.gridIndex} is {lowestBestCostCell.gridIndex}");
+                }
                 cells[i] = cell;
                 neighborCells.Dispose();
             }
@@ -87,20 +97,31 @@ namespace Zuy.TenebrousRecursion.Job
 
         void GetNeighborCells(in Cell rootCell, in NativeArray<Cell> cells, out NativeList<Cell> neighborCells)
         {
-            neighborCells = new NativeList<Cell>(7, Allocator.Temp);
+            neighborCells = new NativeList<Cell>(8, Allocator.Temp);
 
             int2 rootCellGridIndex = rootCell.gridIndex;
-            var allDirections = Direction.AllDirections();
+
+            int2 northGridIndex = rootCellGridIndex + Constant.Direction.NORTH;
+            int2 southGridIndex = rootCellGridIndex + Constant.Direction.SOUTH;
+            int2 eastGridIndex = rootCellGridIndex + Constant.Direction.EAST;
+            int2 westGridIndex = rootCellGridIndex + Constant.Direction.WEST;
+            int2 northEastGridIndex = rootCellGridIndex + Constant.Direction.NORTH_EAST;
+            int2 northWestGridIndex = rootCellGridIndex + Constant.Direction.NORTH_WEST;
+            int2 southEastGridIndex = rootCellGridIndex + Constant.Direction.SOUTH_EAST;
+            int2 southWestGridIndex = rootCellGridIndex + Constant.Direction.SOUTH_WEST;
 
             foreach (var cell in cells)
             {
-                foreach (var direction in allDirections)
+                if (cell.gridIndex.Equals(northGridIndex)
+                || cell.gridIndex.Equals(southGridIndex)
+                || cell.gridIndex.Equals(eastGridIndex)
+                || cell.gridIndex.Equals(westGridIndex)
+                || cell.gridIndex.Equals(northEastGridIndex)
+                || cell.gridIndex.Equals(northWestGridIndex)
+                || cell.gridIndex.Equals(southEastGridIndex)
+                || cell.gridIndex.Equals(southWestGridIndex))
                 {
-                    if (cell.gridIndex.Equals(rootCellGridIndex + direction))
-                    {
-                        neighborCells.AddNoResize(cell);
-                        break;
-                    }
+                    neighborCells.AddNoResize(cell);
                 }
             }
         }
