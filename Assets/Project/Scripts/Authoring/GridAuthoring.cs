@@ -10,10 +10,8 @@ namespace Zuy.TenebrousRecursion.Authoring
         public Vector2Int gridSize = new Vector2Int(10, 10);
         public int cellDiameter = 1;
         public Color gridColor = Color.white;
-        public Transform checker;
         public bool showGridGeneration = false;
 
-        private List<GameObject> _cellObjects = new List<GameObject>();
 
         class Baker : Baker<GridAuthoring>
         {
@@ -32,8 +30,30 @@ namespace Zuy.TenebrousRecursion.Authoring
         private void OnDrawGizmos()
         {
             if (showGridGeneration)
+            {
                 DrawGrid();
+                DrawImpassibleCells(); // Draw the impassible cells
+            }
         }
+
+        private void DrawImpassibleCells()
+        {
+            Gizmos.color = Color.red; // Color for impassible cells
+
+            foreach (Transform child in transform)
+            {
+                var cellAuthoring = child.GetComponent<CellAuthoring>();
+                if (cellAuthoring != null && cellAuthoring.isImpassible)
+                {
+                    Vector3 cellPosition = child.transform.position;
+                    float halfSize = cellDiameter / 2f;
+
+                    // Draw a filled cube to mark the impassible cell
+                    Gizmos.DrawCube(cellPosition, new Vector3(cellDiameter, cellDiameter, 0.1f));
+                }
+            }
+        }
+
 
         private void DrawGrid()
         {
@@ -72,12 +92,6 @@ namespace Zuy.TenebrousRecursion.Authoring
                     GameObject cellObject = new GameObject($"Cell_{x}_{y}");
                     cellObject.transform.SetParent(transform);
                     cellObject.transform.localPosition = new Vector3(x * cellDiameter + cellDiameter / 2, y * cellDiameter + cellDiameter / 2, 0);
-
-                    CellAuthoring cellAuthoring = cellObject.AddComponent<CellAuthoring>();
-                    uint mortonCode = MortonCode.Encode(x, y);
-                    // cellAuthoring.mortonCode = mortonCode;
-
-                    _cellObjects.Add(cellObject);
                 }
             }
 

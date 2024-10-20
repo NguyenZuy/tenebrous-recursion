@@ -30,7 +30,7 @@ MonoBehaviour:
   - level: 3
     timeToAppear: 600
   waves:
-  - timeToAppear: 5
+  - timeToAppear: 30
     id1: 0
     number1: 100
     id2: 1

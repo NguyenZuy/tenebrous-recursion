@@ -8,6 +8,8 @@ namespace Zuy.TenebrousRecursion.Authoring
 {
     class CellAuthoring : MonoBehaviour
     {
+        public bool isImpassible;
+
         class Baker : Baker<CellAuthoring>
         {
             public override void Bake(CellAuthoring authoring)
