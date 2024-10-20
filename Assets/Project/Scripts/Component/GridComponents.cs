@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -15,7 +16,8 @@ namespace Zuy.TenebrousRecursion.Component
         public uint mortonCode;
         public int2 gridIndex;
 
-        public bool isImpassible;
+
+        [MarshalAs(UnmanagedType.U1)] public bool isImpassible;
 
         public int cost;
         public int bestCost; // Steps (unit is 1) to the target cell
