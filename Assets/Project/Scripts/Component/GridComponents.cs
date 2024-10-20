@@ -15,6 +15,8 @@ namespace Zuy.TenebrousRecursion.Component
         public uint mortonCode;
         public int2 gridIndex;
 
+        public bool isImpassible;
+
         public int cost;
         public int bestCost; // Steps (unit is 1) to the target cell
         public int2 curDirection;

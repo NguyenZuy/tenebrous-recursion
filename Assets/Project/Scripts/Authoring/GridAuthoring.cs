@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Unity.Entities;
+using UnityEditor;
 using UnityEngine;
 using Zuy.TenebrousRecursion.Utility;
 
@@ -11,7 +12,9 @@ namespace Zuy.TenebrousRecursion.Authoring
         public int cellDiameter = 1;
         public Color gridColor = Color.white;
         public bool showGridGeneration = false;
-
+        public bool showCellIndices = true; // New option to toggle cell index display
+        public Color cellIndexColor = Color.yellow; // Color for cell index text
+        public Color impassibleColor;
 
         class Baker : Baker<GridAuthoring>
         {
@@ -33,12 +36,17 @@ namespace Zuy.TenebrousRecursion.Authoring
             {
                 DrawGrid();
                 DrawImpassibleCells(); // Draw the impassible cells
+
+                if (showCellIndices)
+                {
+                    DrawCellIndices();
+                }
             }
         }
 
         private void DrawImpassibleCells()
         {
-            Gizmos.color = Color.red; // Color for impassible cells
+            Gizmos.color = impassibleColor; // Color for impassible cells
 
             foreach (Transform child in transform)
             {
@@ -46,8 +54,6 @@ namespace Zuy.TenebrousRecursion.Authoring
                 if (cellAuthoring != null && cellAuthoring.isImpassible)
                 {
                     Vector3 cellPosition = child.transform.position;
-                    float halfSize = cellDiameter / 2f;
-
                     // Draw a filled cube to mark the impassible cell
                     Gizmos.DrawCube(cellPosition, new Vector3(cellDiameter, cellDiameter, 0.1f));
                 }
@@ -80,6 +86,29 @@ namespace Zuy.TenebrousRecursion.Authoring
             }
         }
 
+        private void DrawCellIndices()
+        {
+            int numCellsX = Mathf.FloorToInt(gridSize.x / cellDiameter);
+            int numCellsY = Mathf.FloorToInt(gridSize.y / cellDiameter);
+            Vector3 origin = transform.position;
+
+            for (int x = 0; x < numCellsX; x++)
+            {
+                for (int y = 0; y < numCellsY; y++)
+                {
+                    Vector3 cellCenter = origin + new Vector3(
+                        (x + 0.5f) * cellDiameter,
+                        (y + 0.5f) * cellDiameter,
+                        0
+                    );
+
+                    // Draw the cell index
+                    Handles.color = cellIndexColor;
+                    Handles.Label(cellCenter, $"({x},{y})", GUI.skin.label);
+                }
+            }
+        }
+
         public void GenerateGrid()
         {
             int numCellsX = Mathf.FloorToInt(gridSize.x / cellDiameter);
@@ -98,46 +127,5 @@ namespace Zuy.TenebrousRecursion.Authoring
             // Update the actual size of the grid
             gridSize = new Vector2Int(numCellsX * cellDiameter, numCellsY * cellDiameter);
         }
-        public bool IsEntityInsideCell(Vector3 entityPosition, uint cellMortonCode)
-        {
-            int gridX = Mathf.FloorToInt(entityPosition.x / cellDiameter);
-            int gridY = Mathf.FloorToInt(entityPosition.y / cellDiameter);
-            uint entityMortonCode = MortonCode.Encode(gridX, gridY);
-            return entityMortonCode == cellMortonCode;
-        }
-
-    }
-}
-
-public static class MortonCode
-{
-    public static uint Encode(int x, int y)
-    {
-        return (uint)((Part1By1(y) << 1) + Part1By1(x));
-    }
-
-    public static (int x, int y) Decode(uint code)
-    {
-        return (Compact1By1(code), Compact1By1(code >> 1));
-    }
-
-    private static uint Part1By1(int n)
-    {
-        n &= 0x0000ffff;
-        n = (n ^ (n << 8)) & 0x00ff00ff;
-        n = (n ^ (n << 4)) & 0x0f0f0f0f;
-        n = (n ^ (n << 2)) & 0x33333333;
-        n = (n ^ (n << 1)) & 0x55555555;
-        return (uint)n;
-    }
-
-    private static int Compact1By1(uint n)
-    {
-        n &= 0x55555555;
-        n = (n ^ (n >> 1)) & 0x33333333;
-        n = (n ^ (n >> 2)) & 0x0f0f0f0f;
-        n = (n ^ (n >> 4)) & 0x00ff00ff;
-        n = (n ^ (n >> 8)) & 0x0000ffff;
-        return (int)n;
     }
 }

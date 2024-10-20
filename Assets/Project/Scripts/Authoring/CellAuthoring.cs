@@ -17,13 +17,14 @@ namespace Zuy.TenebrousRecursion.Authoring
                 var entity = GetEntity(authoring, TransformUsageFlags.None);
 
                 ConvertUtils.F3ToF2(authoring.transform.position, out float2 pos);
-
                 float cellSize = authoring.transform.parent.GetComponent<GridAuthoring>().cellDiameter;
+                GridUtils.GetGridIndexByPos(pos, cellSize, out int2 gridIndex);
 
                 AddComponent(entity, new Cell()
                 {
                     mortonCode = MortonUtils.Encode(pos, cellSize),
-                    gridIndex = (int2)math.floor(pos / cellSize)
+                    gridIndex = gridIndex,
+                    isImpassible = authoring.isImpassible
                 });
 
                 AddBuffer<CellMember>(entity);

@@ -1,6 +1,7 @@
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Zuy.TenebrousRecursion.Component;
 using Zuy.TenebrousRecursion.Job;
 
@@ -62,6 +63,12 @@ namespace Zuy.TenebrousRecursion.System
             Cell playerCurCell = SystemAPI.GetComponentRO<Cell>(cellEntities[indexOfPlayerCurCell]).ValueRO;
 
             NativeArray<Cell> allCells = _cellQuery1.ToComponentDataArray<Cell>(Allocator.TempJob);
+            NativeHashMap<int2, Cell> cellsMap = new NativeHashMap<int2, Cell>(allCells.Length, Allocator.TempJob);
+
+            foreach (var cell in allCells)
+            {
+                cellsMap.Add(cell.gridIndex, cell);
+            }
 
             var getInsideAgentsJob = new GetInsideAgentsJob()
             {
@@ -80,7 +87,7 @@ namespace Zuy.TenebrousRecursion.System
 
             var calculateFFPFlowFieldJob = new CalculateFFPFlowFieldJob()
             {
-                allCells = allCells,
+                cellsMap = cellsMap,
                 cellTypeHandle = _cellTypeHandle,
             };
             state.Dependency = calculateFFPFlowFieldJob.ScheduleParallel(_cellQuery2, state.Dependency);
