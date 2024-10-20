@@ -84,7 +84,6 @@ public class InstanceRenderPass : ScriptableRenderPass
         InitializeArrays();
 
         _isInitialized = true;
-        Debug.Log("InstanceRenderPass initialized.");
     }
 
     private void SetupEntityQuery()
@@ -128,7 +127,6 @@ public class InstanceRenderPass : ScriptableRenderPass
         _batcher.Dispose();
         _localToWorlds.Dispose();
         _entities.Dispose();
-        Debug.Log("InstanceRenderPass disposed.");
     }
 
     [System.Obsolete]
@@ -164,7 +162,6 @@ public class InstanceRenderPass : ScriptableRenderPass
         {
             _entities.Dispose();
             _entities = _enemyQuery.ToEntityArray(Allocator.Persistent);
-            Debug.Log($"Entities fetched: {_entities.Length}");
         }
     }
 
@@ -220,7 +217,6 @@ public class InstanceRenderPass : ScriptableRenderPass
     {
         int count = Mathf.Min(_entities.Length, BatchSize);
         _batchCount = count;
-        Debug.Log($"Batch Count: {_batchCount}");
 
         for (int i = 0; i < count; i++)
         {
@@ -260,16 +256,17 @@ public class InstanceRenderPass : ScriptableRenderPass
             }
 
             SetMaterialProperties();
-            Debug.Log($"Drawing Mesh with {_batchCount} instances.");
 
             _commandBuffer.DrawMeshInstanced(_currentData.Mesh, _currentData.SubMesh, _currentData.Material, 0, _matrices, _batchCount, _propertyBlock);
             _batchCount = 0;
         }
     }
 
+    private List<Vector4> spriteOffsetList = new List<Vector4>();
+
     private void SetMaterialProperties()
     {
-        var spriteOffsetList = new List<Vector4>(_batchCount);
+        spriteOffsetList.Clear();
         for (int i = 0; i < _batchCount; i++)
         {
             spriteOffsetList.Add(new Vector4(_spriteOffsetArray[i].x, _spriteOffsetArray[i].y, 0, 0));
