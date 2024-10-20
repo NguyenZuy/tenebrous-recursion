@@ -3,7 +3,6 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using Zuy.TenebrousRecursion.Component;
-using Zuy.TenebrousRecursion.Hybrid;
 using Zuy.TenebrousRecursion.Mono;
 using Zuy.TenebrousRecursion.Utility;
 
@@ -45,6 +44,11 @@ namespace Zuy.TenebrousRecursion.System
                 var cells = _cellQuery.ToComponentDataArray<Cell>(Allocator.Temp);
 
                 float3 newPos = localTransform.ValueRW.Position + (cachedInput * player.ValueRW.moveSpeed * SystemAPI.Time.DeltaTime);
+                float3 direction = math.normalize(newPos - localTransform.ValueRO.Position);
+                float3 offset = direction * 1f;
+                offset.z = localTransform.ValueRO.Position.z;
+                newPos += offset;
+
                 GridUtils.GetGridIndexByPos(newPos, grid.cellDiameter, out int2 gridIndex);
                 GridUtils.GetCellByGridIndex(cells, gridIndex, out Cell targetCell);
 

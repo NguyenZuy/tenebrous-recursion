@@ -81,7 +81,6 @@ namespace Zuy.TenebrousRecursion.Job
 
                 Cell cell = cells[i];
                 GetNeighborCells(cell, cellsMap, ref neighborCells);
-                //GetNeighborCells(cell, allCells, ref neighborCells);
                 GetLastLowestBestCostCell(neighborCells, out Cell lowestBestCostCell);
                 GetDirection(ref cell, lowestBestCostCell);
 
@@ -91,15 +90,6 @@ namespace Zuy.TenebrousRecursion.Job
 
             neighborCells.Dispose();
             cells.Dispose();
-        }
-
-        void ConvertToHashMap(in NativeArray<Cell> cells, out NativeHashMap<int2, Cell> result)
-        {
-            result = new NativeHashMap<int2, Cell>();
-            foreach (var cell in cells)
-            {
-                result.Add(cell.gridIndex, cell);
-            }
         }
 
         void GetNeighborCells(in Cell rootCell, in NativeHashMap<int2, Cell> cellsMap, ref NativeList<Cell> neighborCells)
@@ -146,35 +136,6 @@ namespace Zuy.TenebrousRecursion.Job
             if (cellsMap.TryGetValue(southWestGridIndex, out Cell cell8))
             {
                 neighborCells.AddNoResize(cell8);
-            }
-        }
-
-        void GetNeighborCells(in Cell rootCell, in NativeArray<Cell> cells, ref NativeList<Cell> neighborCells)
-        {
-            int2 rootCellGridIndex = rootCell.gridIndex;
-
-            int2 northGridIndex = rootCellGridIndex + Constant.Direction.NORTH;
-            int2 southGridIndex = rootCellGridIndex + Constant.Direction.SOUTH;
-            int2 eastGridIndex = rootCellGridIndex + Constant.Direction.EAST;
-            int2 westGridIndex = rootCellGridIndex + Constant.Direction.WEST;
-            int2 northEastGridIndex = rootCellGridIndex + Constant.Direction.NORTH_EAST;
-            int2 northWestGridIndex = rootCellGridIndex + Constant.Direction.NORTH_WEST;
-            int2 southEastGridIndex = rootCellGridIndex + Constant.Direction.SOUTH_EAST;
-            int2 southWestGridIndex = rootCellGridIndex + Constant.Direction.SOUTH_WEST;
-
-            foreach (var cell in cells)
-            {
-                if (cell.gridIndex.Equals(northGridIndex)
-                || cell.gridIndex.Equals(southGridIndex)
-                || cell.gridIndex.Equals(eastGridIndex)
-                || cell.gridIndex.Equals(westGridIndex)
-                || cell.gridIndex.Equals(northEastGridIndex)
-                || cell.gridIndex.Equals(northWestGridIndex)
-                || cell.gridIndex.Equals(southEastGridIndex)
-                || cell.gridIndex.Equals(southWestGridIndex))
-                {
-                    neighborCells.AddNoResize(cell);
-                }
             }
         }
 
